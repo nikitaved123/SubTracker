@@ -75,9 +75,10 @@
 **Backend:**
 - Node.js;
 - Express.js.
+- JSON Web Token
 
 **База данных:**
-- MySQL или MongoDB.
+- SQLite3
 
 **Дополнительные инструменты:**
 - Git и GitHub для контроля версий;
