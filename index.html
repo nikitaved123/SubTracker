@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SubTrack — Трекер подписок</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- МОДАЛЬНОЕ ОКНО ВХОДА/РЕГИСТРАЦИИ -->
+<div id="authModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-logo">
+        <div class="logo-icon"><i class="ti ti-credit-card"></i></div>
+        <div class="logo-text">SubTrack</div>
+      </div>
+      <button class="modal-close" id="closeModalBtn">&times;</button>
+    </div>
+    <div id="authForms">
+      <!-- Форма входа -->
+      <div id="loginForm" class="auth-form active">
+        <h3>Вход в аккаунт</h3>
+        <div class="input-group">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
+        </div>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password">
+        </div>
+        <button id="loginBtn" class="auth-btn">Войти</button>
+        <p class="auth-switch">Нет аккаунта? <span id="showRegisterBtn">Зарегистрироваться</span></p>
+      </div>
+      <!-- Форма регистрации -->
+      <div id="registerForm" class="auth-form">
+        <h3>Регистрация</h3>
+        <div class="input-group">
+          <i class="ti ti-user"></i>
+          <input type="text" id="regName" placeholder="Имя" autocomplete="name">
+        </div>
+        <div class="input-group">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
+        </div>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="regPassword" placeholder="Пароль (мин. 6 символов)" autocomplete="new-password">
+        </div>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль">
+        </div>
+        <button id="registerBtn" class="auth-btn">Зарегистрироваться</button>
+        <p class="auth-switch">Уже есть аккаунт? <span id="showLoginBtn">Войти</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app" style="display: none;">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-credit-card"></i></div>
+      <div class="logo-text">SubTrack</div>
+    </div>
+    <div class="nav">
+      <div class="nav-item active" data-page="home"><i class="ti ti-layout-dashboard"></i> Главная</div>
+      <div class="nav-item" data-page="subscriptions"><i class="ti ti-list"></i> Подписки</div>
+      <div class="nav-item" data-page="stats"><i class="ti ti-chart-bar"></i> Статистика</div>
+      <div class="nav-item" data-page="notifications"><i class="ti ti-bell"></i> Уведомления</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i> Настройки</div>
+      <div class="nav-item" data-page="profile"><i class="ti ti-user-circle"></i> Профиль</div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="nav-item" id="logoutBtn" style="color:#dc2626;">
+        <i class="ti ti-logout"></i>
+        Выйти
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Главная</div>
+      <button class="btn-add" id="globalAddBtn"><i class="ti ti-plus"></i> Добавить</button>
+    </div>
+    <div class="content">
+
+      <!-- HOME страница -->
+      <div class="page active" id="home">
+        <div class="stats-row" id="homeStats"></div>
+        <div class="section-label">📋 АКТИВНЫЕ ПОДПИСКИ</div>
+        <div id="homeSubList" class="sub-list"></div>
+      </div>
+
+      <!-- ПОДПИСКИ -->
+      <div class="page" id="subscriptions">
+        <div class="section-label">✏️ ВСЕ ПОДПИСКИ</div>
+        <div id="allSubscriptionsContainer" class="subs-grid"></div>
+      </div>
+
+      <!-- СТАТИСТИКА + АНАЛИТИКА ЦЕН -->
+      <div class="page" id="stats">
+        <div class="stats-row" id="statsDetailed"></div>
+        <div class="section-label">📈 ДИНАМИКА ИЗМЕНЕНИЯ ЦЕН</div>
+        <canvas id="priceChart" style="background: #fafcff; border-radius: 24px; padding: 12px;"></canvas>
+        <div class="section-label" style="margin-top: 16px;">💰 ИСТОРИЯ ИЗМЕНЕНИЙ ЦЕН ПО ПОДПИСКАМ</div>
+        <div id="priceHistoryTable"></div>
+      </div>
+
+      <!-- УВЕДОМЛЕНИЯ -->
+      <div class="page" id="notifications">
+        <div class="section-label">🔔 БЛИЖАЙШИЕ УВЕДОМЛЕНИЯ</div>
+        <div id="notificationsList"></div>
+      </div>
+
+      <!-- НАСТРОЙКИ -->
+      <div class="page" id="settings">
+        <div class="settings-group">
+          <div class="settings-row">
+            <span class="settings-label">🔔 Уведомления о списаниях</span>
+            <div id="notifToggle" class="toggle-switch"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <span style="color:#64748b;">Полная аналитика изменения цен</span>
+        </div>
+      </div>
+
+      <!-- ПРОФИЛЬ -->
+      <div class="page" id="profile">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <i class="ti ti-user-circle"></i>
+          </div>
+          <div class="profile-info" id="profileInfo"></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-row">
+            <span class="settings-label">📧 Email</span>
+            <span id="profileEmail" class="profile-value"></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">👤 Имя</span>
+            <span id="profileName" class="profile-value"></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">📅 Дата регистрации</span>
+            <span id="profileDate" class="profile-value"></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">💳 Активных подписок</span>
+            <span id="profileSubCount" class="profile-value"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
